@@ -1,0 +1,8 @@
+{
+  "name": "hyperline",
+  "description": "A generalized tic-tac-toe game & its variants",
+  "repository": "https://git.heroku.com/hyperline.git",
+  "logo": "",
+  "keywords": ["node", "express", "socket", "hyperline"],
+  "image": "heroku/nodejs"
+}
