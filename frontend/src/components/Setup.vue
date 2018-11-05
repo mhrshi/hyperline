@@ -91,10 +91,12 @@
                                 <v-text-field
                                     v-if="setupDialog"
                                     v-model="gamerName"
+                                    :error-messages="gamerNameError"
                                     label="Gamer name"
+                                    @focus="onFocus"
                                     autofocus>
                                 </v-text-field>
-                                <p class="mb-0 caption grey--text text--darken-1">You will be identified by this name throughout the game</p>
+                                <p class="mb-0 pt-3 caption grey--text text--darken-1">You will be identified by this name throughout the game</p>
                             </v-card-text>
                             <v-divider></v-divider>
                             <v-card-actions>
@@ -156,6 +158,7 @@
                 setupStep: 1,
                 buttonLoader: false,
                 gamerName: '',
+                gamerNameError: '',
                 sessionId: '',
                 sessionError: '',
                 headers: [
@@ -202,6 +205,10 @@
             },
 
             nextWindow() {
+                if (!this.gamerName) {
+                    this.gamerNameError = 'Required';
+                    return;
+                }
                 if (this.setupChoice === 0) {
                     this.buttonLoader = true;
                     this.$store.state.socket.emit('newHost', this.gamerName);
@@ -254,6 +261,7 @@
 
             onFocus() {
                 this.sessionError = '';
+                this.gamerNameError = '';
             }
         },
 
