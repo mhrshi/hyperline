@@ -74,6 +74,15 @@
                         </div>
                         <div v-else-if="wonBy === 'none'">
                             <p class="title text-xs-center">Draw!</p>
+                            <p class="text-xs-center">
+                                <v-btn
+                                    v-if="$store.state.starter"
+                                    color="blue-grey darken-3"
+                                    @click="emitPlayAgain"
+                                    dark>
+                                    play again
+                                </v-btn>
+                            </p>
                         </div>
                         <div v-else>
                             <p class="title text-xs-center">Winner: {{ wonBy }}</p>
