@@ -1,8 +1,7 @@
 {
   "name": "hyperline",
-  "description": "A generalized tic-tac-toe game & its variants",
-  "repository": "https://git.heroku.com/hyperline.git",
+  "description": "A remote, PvP, 2-in-1 tic-tac-toe and magic squares game with varying grid sizes.",
+  "repository": "",
   "logo": "",
-  "keywords": ["node", "express", "socket", "hyperline"],
-  "image": "heroku/nodejs"
+  "keywords": ["node", "express", "socket", "hyperline"]
 }
