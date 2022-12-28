@@ -125,7 +125,7 @@ $board-line: 6px solid #2e4c6d;
   gap: 0.8rem;
 
   @include phoneGame {
-    padding: 1.6rem;
+    padding: 2rem;
   }
   @include desktopGame {
     flex-direction: column;
