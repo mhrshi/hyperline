@@ -1,7 +1,8 @@
 import { useContext, useEffect } from "react";
 import { useRouter } from "next/router";
-import { ActionIcon, CopyButton, Loader, Tooltip } from "@mantine/core";
+import { ActionIcon, Loader, Tooltip, UnstyledButton } from "@mantine/core";
 import { IconClipboard, IconClipboardCheck } from "@tabler/icons";
+import { useClipboard } from "@mantine/hooks";
 
 import scss from "./SetupModal.module.scss";
 import { SocketContext } from "@context/Socket";
@@ -19,6 +20,7 @@ interface Payload {
 
 const Hosted = ({ session }: Props) => {
   const router = useRouter();
+  const clipboard = useClipboard();
   const socket = useContext(SocketContext);
   const [, setSession] = useContext(SessionContext);
   useEffect(() => {
@@ -51,15 +53,21 @@ const Hosted = ({ session }: Props) => {
       </p>
       <div className={clsx("txt-lg", scss.sessionId)}>
         {session.id}
-        <CopyButton value={session.id} timeout={4000}>
-          {({ copied, copy }) => (
-            <Tooltip label={copied ? "Copied" : "Copy"} position="right" withArrow>
-              <ActionIcon color={copied ? "teal.6" : "gray.6"} onClick={copy}>
-                {copied ? <IconClipboardCheck /> : <IconClipboard />}
-              </ActionIcon>
-            </Tooltip>
-          )}
-        </CopyButton>
+        <UnstyledButton>
+          <Tooltip
+            withArrow
+            position="right"
+            events={{ hover: true, touch: true, focus: false }}
+            label={clipboard.error ? "couldn't copy :(" : clipboard.copied ? "copied" : "copy"}
+          >
+            <ActionIcon
+              color={clipboard.copied ? "teal.6" : "gray.6"}
+              onClick={() => clipboard.copy(session.id)}
+            >
+              {clipboard.copied ? <IconClipboardCheck /> : <IconClipboard />}
+            </ActionIcon>
+          </Tooltip>
+        </UnstyledButton>
       </div>
     </>
   );
