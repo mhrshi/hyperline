@@ -1,0 +1,80 @@
+@import "mixins.global.scss";
+@import "variables.global.scss";
+
+$space-x: 2rem;
+$space-y: 2.4rem;
+
+.container {
+  width: 100%;
+  height: 100%;
+  display: grid;
+
+  @include phone {
+    grid-auto-flow: row;
+    grid-template-areas:
+      "info"
+      "actions";
+  }
+  @include desktop {
+    grid-template-columns: 1.2fr 1fr;
+    grid-template-areas: "info actions";
+  }
+}
+
+.actions {
+  grid-area: actions;
+  display: grid;
+  row-gap: $space-y;
+  grid-template-rows: min-content repeat(2, minmax(0, 1fr));
+
+  > button {
+    background: none;
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+    margin: 0 $space-x;
+    display: grid;
+    grid-template-rows: 1fr min-content;
+    justify-items: center;
+    gap: 0.8rem;
+    font-size: 1.2rem;
+    filter: grayscale(90%);
+    &:hover {
+      filter: initial;
+    }
+  }
+
+  svg {
+    max-width: 600px;
+  }
+
+  @include phone {
+    padding-bottom: calc(2 * #{$space-y});
+  }
+  @include desktop {
+    min-height: 0;
+    padding-bottom: $space-y;
+  }
+}
+
+.info {
+  grid-area: info;
+  display: grid;
+  grid-auto-flow: row;
+  align-items: flex-start;
+  align-content: flex-start;
+  row-gap: $space-y;
+  padding-bottom: $space-y;
+  background-color: #e1f5fe;
+
+  h4 {
+    margin: 0;
+  }
+
+  > div {
+    margin: 0 $space-x;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+}
