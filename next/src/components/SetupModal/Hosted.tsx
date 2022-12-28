@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { useRouter } from "next/router";
-import { ActionIcon, Tooltip, UnstyledButton } from "@mantine/core";
+import { ActionIcon, Tooltip } from "@mantine/core";
 import { IconClipboard, IconClipboardCheck } from "@tabler/icons";
 import { useClipboard } from "@mantine/hooks";
 
@@ -53,21 +53,19 @@ const Hosted = ({ session }: Props) => {
       </p>
       <div className={clsx("txt-lg", scss.sessionId)}>
         {session.id}
-        <UnstyledButton>
-          <Tooltip
-            withArrow
-            position="right"
-            events={{ hover: true, touch: true, focus: false }}
-            label={clipboard.error ? "couldn't copy :(" : clipboard.copied ? "copied" : "copy"}
+        <Tooltip
+          withArrow
+          position="top"
+          events={{ hover: true, touch: true, focus: false }}
+          label={clipboard.error ? "couldn't copy :(" : clipboard.copied ? "copied" : "copy"}
+        >
+          <ActionIcon
+            color={clipboard.copied ? "teal.6" : "gray.6"}
+            onClick={() => clipboard.copy(session.id)}
           >
-            <ActionIcon
-              color={clipboard.copied ? "teal.6" : "gray.6"}
-              onClick={() => clipboard.copy(session.id)}
-            >
-              {clipboard.copied ? <IconClipboardCheck /> : <IconClipboard />}
-            </ActionIcon>
-          </Tooltip>
-        </UnstyledButton>
+            {clipboard.copied ? <IconClipboardCheck /> : <IconClipboard />}
+          </ActionIcon>
+        </Tooltip>
         <TicTacLoader />
       </div>
     </>
