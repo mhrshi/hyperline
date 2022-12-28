@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Button, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 
@@ -44,7 +44,8 @@ const GamerName = ({ submitName }: Props) => {
     validateName();
   }, [name]);
 
-  const onSubmit = () => {
+  const onSubmit = (evt: FormEvent) => {
+    evt.preventDefault();
     if (errors.name) return;
     setLoading(true);
     submitName(name);
@@ -53,17 +54,19 @@ const GamerName = ({ submitName }: Props) => {
   return (
     <>
       <p className={scss.tip}>How would you like to identify yourself?</p>
-      <TextInput
-        size="md"
-        label="Gamer name"
-        value={name}
-        onChange={setName}
-        error={errors.name}
-        disabled={isLoading}
-      />
-      <Button onClick={onSubmit} loading={isLoading} loaderPosition="right">
-        NEXT
-      </Button>
+      <form onSubmit={onSubmit}>
+        <TextInput
+          size="md"
+          label="Gamer name"
+          value={name}
+          onChange={setName}
+          error={errors.name}
+          disabled={isLoading}
+        />
+        <Button type="submit" loaderPosition="right" loading={isLoading}>
+          NEXT
+        </Button>
+      </form>
     </>
   );
 };

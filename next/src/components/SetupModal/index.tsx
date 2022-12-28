@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import { Modal } from "@mantine/core";
 
 import scss from "./SetupModal.module.scss";
@@ -58,8 +57,8 @@ export default ({ action, opened, onClose }: Props) => {
     >
       <div className={scss.container}>
         {!session && !gamerName && <GamerName submitName={submitName} />}
-        {!!session && firstPlayerOnly && <Hosted session={session} />}
-        {!session && !!gamerName && <Join gamerName={gamerName} />}
+        {wannaHost && !!session && firstPlayerOnly && <Hosted session={session} />}
+        {!wannaHost && !!gamerName && <Join gamerName={gamerName} />}
       </div>
     </Modal>
   );

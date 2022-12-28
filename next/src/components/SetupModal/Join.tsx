@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Button, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
@@ -42,7 +42,8 @@ const Join = ({ gamerName }: Props) => {
     validate();
   }, [sessionId]);
 
-  const onSubmit = () => {
+  const onSubmit = (evt: FormEvent) => {
+    evt.preventDefault();
     if (errors.sessionId) return;
     setLoading(true);
     socket.emit("addPlayer", gamerName, sessionId);
@@ -66,17 +67,19 @@ const Join = ({ gamerName }: Props) => {
   return (
     <>
       <p className={scss.tip}>Enter session ID shared by your friend</p>
-      <TextInput
-        size="md"
-        label="Session ID"
-        value={sessionId}
-        onChange={setSessionId}
-        error={errors.sessionId}
-        disabled={isLoading}
-      />
-      <Button onClick={onSubmit} loading={isLoading} loaderPosition="right">
-        NEXT
-      </Button>
+      <form onSubmit={onSubmit}>
+        <TextInput
+          size="md"
+          label="Session ID"
+          value={sessionId}
+          onChange={setSessionId}
+          error={errors.sessionId}
+          disabled={isLoading}
+        />
+        <Button type="submit" loaderPosition="right" loading={isLoading}>
+          NEXT
+        </Button>
+      </form>
     </>
   );
 };

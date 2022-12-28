@@ -1,8 +1,12 @@
 .container {
-  display: grid;
-  grid-auto-flow: row;
-  gap: 1.4rem;
   padding-bottom: 0.4rem;
+
+  &,
+  form {
+    display: grid;
+    grid-auto-flow: row;
+    gap: 1.4rem;
+  }
 
   button {
     width: fit-content;
