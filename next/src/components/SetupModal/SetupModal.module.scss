@@ -14,19 +14,13 @@
   }
 }
 
-.session {
+.sessionId {
+  font-family: var(--mantine-font-family-monospace);
+  color: var(--mantine-color-blue-8);
   display: flex;
-  justify-content: space-between;
   align-items: center;
 
-  > div {
-    font-family: var(--mantine-font-family-monospace);
-    color: var(--mantine-color-blue-8);
-    display: flex;
-    align-items: center;
-
-    button {
-      margin-left: 0.4rem;
-    }
+  button {
+    margin-left: 0.4rem;
   }
 }

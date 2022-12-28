@@ -6,6 +6,7 @@ import { IconClipboard, IconClipboardCheck } from "@tabler/icons";
 import scss from "./SetupModal.module.scss";
 import { SocketContext } from "@context/Socket";
 import { Session, SessionContext } from "@context/Session";
+import { clsx } from "utils";
 
 interface Props {
   session: Session;
@@ -42,21 +43,23 @@ const Hosted = ({ session }: Props) => {
 
   return (
     <>
-      <p className={scss.tip}>Your friend can use this session ID to join. Waiting...</p>
-      <div className={scss.session}>
-        <div className="txt-lg">
-          {session.id}
-          <CopyButton value={session.id} timeout={4000}>
-            {({ copied, copy }) => (
-              <Tooltip label={copied ? "Copied" : "Copy"} position="right" withArrow>
-                <ActionIcon color={copied ? "teal.6" : "gray.6"} onClick={copy}>
-                  {copied ? <IconClipboardCheck /> : <IconClipboard />}
-                </ActionIcon>
-              </Tooltip>
-            )}
-          </CopyButton>
-        </div>
-        <Loader size="md" />
+      <p className={scss.tip}>
+        Your friend can use this session ID to join.
+        <br />
+        Waiting&nbsp;&nbsp;
+        <Loader variant="dots" />
+      </p>
+      <div className={clsx("txt-lg", scss.sessionId)}>
+        {session.id}
+        <CopyButton value={session.id} timeout={4000}>
+          {({ copied, copy }) => (
+            <Tooltip label={copied ? "Copied" : "Copy"} position="right" withArrow>
+              <ActionIcon color={copied ? "teal.6" : "gray.6"} onClick={copy}>
+                {copied ? <IconClipboardCheck /> : <IconClipboard />}
+              </ActionIcon>
+            </Tooltip>
+          )}
+        </CopyButton>
       </div>
     </>
   );
