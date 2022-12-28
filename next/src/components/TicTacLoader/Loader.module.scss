@@ -1,0 +1,26 @@
+.l {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+}
+
+.o {
+  stroke-dasharray: 12.56;
+  stroke-dashoffset: 12.56;
+}
+
+.x {
+  stroke-dasharray: 7.65;
+  stroke-dashoffset: 7.65;
+}
+
+.l,
+.o,
+.x {
+  animation: toZero 1s cubic-bezier(0.37, 0, 0.63, 1) alternate infinite;
+}
+
+@keyframes toZero {
+  to {
+    stroke-dashoffset: 0;
+  }
+}

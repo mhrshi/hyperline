@@ -5,8 +5,8 @@ import { useRouter } from "next/router";
 import scss from "@styles/pages/setup.module.scss";
 import SetupModal, { SetupAction } from "@components/SetupModal";
 import { SessionContext } from "@context/Session";
-import HostSvg from "@svg/host";
-import JoinSvg from "@svg/join";
+import HostSvg from "@svg/Host";
+import JoinSvg from "@svg/Join";
 
 type ModalConfig = { opened: boolean; action: SetupAction };
 

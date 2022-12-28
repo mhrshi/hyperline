@@ -60,10 +60,17 @@ p {
   margin-bottom: 0;
 }
 
+.icon-tabler-x {
+  color: #fc997c;
+}
 .icon-tabler-circle {
+  color: #396eb0;
   circle {
     r: 7px;
   }
+}
+.icon-tabler-tic-tac {
+  color: #2e4c6d;
 }
 .icon-tabler-bolt {
   transform: rotate(10deg);

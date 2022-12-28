@@ -1,1 +1,2 @@
-export const clsx = (...classes: string[]) => classes.filter(Boolean).join(" ").trim() || undefined;
+export const clsx = (...classes: (string | undefined | null)[]) =>
+  classes.filter(Boolean).join(" ").trim() || undefined;

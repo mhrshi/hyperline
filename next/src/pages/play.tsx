@@ -1,10 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import Head from "next/head";
-import { Button, Chip, Loader } from "@mantine/core";
+import { Button, Chip } from "@mantine/core";
 import { IconBolt, IconCircle, IconTrophy, IconX } from "@tabler/icons";
 import { useRouter } from "next/router";
 
 import scss from "@styles/pages/play.module.scss";
+import Splash from "@components/Splash";
+import TicTacLoader from "@components/TicTacLoader";
 import useIsMount from "@hooks/useIsMount";
 import { SocketContext } from "@context/Socket";
 import { SessionContext } from "@context/Session";
@@ -27,11 +29,13 @@ const PlayPage = () => {
 
   useEffect(() => {
     if (!session) {
-      router.push("/setup");
+      setTimeout(() => {
+        router.push("/setup");
+      }, 1000);
     }
   }, []);
   if (!session) {
-    return null;
+    return <Splash />;
   }
 
   const [gridSize, setGridSize] = useState("3");
@@ -139,11 +143,11 @@ const PlayPage = () => {
           <div className={scss.status}>
             {!winner && (
               <>
-                {turn === "p1" && <Loader variant="dots" />}
+                {turn === "p1" && <TicTacLoader className={clsx(scss.loader, scss.x)} />}
                 <div className={clsx("txt-lg", scss.player)}>{session.p1?.name ?? ""}</div>
                 <IconBolt size={48} />
                 <div className={clsx("txt-lg", scss.player)}>{session.p2?.name ?? ""}</div>
-                {turn === "p2" && <Loader variant="dots" />}
+                {turn === "p2" && <TicTacLoader className={clsx(scss.loader, scss.o)} />}
               </>
             )}
             {(winner === "p1" || winner === "p2") && (

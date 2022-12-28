@@ -1,10 +1,11 @@
 import { useContext, useEffect } from "react";
 import { useRouter } from "next/router";
-import { ActionIcon, Loader, Tooltip, UnstyledButton } from "@mantine/core";
+import { ActionIcon, Tooltip, UnstyledButton } from "@mantine/core";
 import { IconClipboard, IconClipboardCheck } from "@tabler/icons";
 import { useClipboard } from "@mantine/hooks";
 
 import scss from "./SetupModal.module.scss";
+import TicTacLoader from "@components/TicTacLoader";
 import { SocketContext } from "@context/Socket";
 import { Session, SessionContext } from "@context/Session";
 import { clsx } from "utils";
@@ -48,8 +49,7 @@ const Hosted = ({ session }: Props) => {
       <p className={scss.tip}>
         Your friend can use this session ID to join.
         <br />
-        Waiting&nbsp;&nbsp;
-        <Loader variant="dots" />
+        Waiting...
       </p>
       <div className={clsx("txt-lg", scss.sessionId)}>
         {session.id}
@@ -68,6 +68,7 @@ const Hosted = ({ session }: Props) => {
             </ActionIcon>
           </Tooltip>
         </UnstyledButton>
+        <TicTacLoader />
       </div>
     </>
   );
