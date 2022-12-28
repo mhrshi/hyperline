@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import Head from "next/head";
 import { Button, Chip, Loader } from "@mantine/core";
 import { IconBolt, IconCircle, IconTrophy, IconX } from "@tabler/icons";
 import { useRouter } from "next/router";
@@ -121,55 +122,60 @@ const PlayPage = () => {
   };
 
   return (
-    <main className={scss.container}>
-      <section className={clsx(scss.board, scss[`b${gridSize}x${gridSize}`])}>
-        {board.map((v, i) => (
-          <div key={i.toString()} onClick={() => markSquare(i)}>
-            {renderSquare(i)}
+    <>
+      <Head>
+        <title>Play game - Hyperline</title>
+      </Head>
+      <main className={scss.container}>
+        <section className={clsx(scss.board, scss[`b${gridSize}x${gridSize}`])}>
+          {board.map((v, i) => (
+            <div key={i.toString()} onClick={() => markSquare(i)}>
+              {renderSquare(i)}
+            </div>
+          ))}
+        </section>
+        <section className={scss.meta}>
+          <header className={clsx(scss.header, "txt-xl header")}>HYPERLINE</header>
+          <div className={scss.status}>
+            {!winner && (
+              <>
+                {turn === "p1" && <Loader variant="dots" />}
+                <div className={clsx("txt-lg", scss.player)}>{session.p1?.name ?? ""}</div>
+                <IconBolt size={48} />
+                <div className={clsx("txt-lg", scss.player)}>{session.p2?.name ?? ""}</div>
+                {turn === "p2" && <Loader variant="dots" />}
+              </>
+            )}
+            {(winner === "p1" || winner === "p2") && (
+              <>
+                <IconTrophy size={48} />
+                <div className="txt-lg">{session[winner]?.name ?? ""} wins!</div>
+              </>
+            )}
+            {winner === "none" && <div className="txt-lg">draw 🤝</div>}
+            {!!winner && (
+              <Button variant="light" onClick={emitPlayAgain}>
+                Play again?
+              </Button>
+            )}
           </div>
-        ))}
-      </section>
-      <section className={scss.meta}>
-        <header className={clsx(scss.header, "txt-xl header")}>HYPERLINE</header>
-        <div className={scss.status}>
-          {!winner && (
-            <>
-              {turn === "p1" && <Loader variant="dots" />}
-              <div className={clsx("txt-lg", scss.player)}>{session.p1?.name ?? ""}</div>
-              <IconBolt size={48} />
-              <div className={clsx("txt-lg", scss.player)}>{session.p2?.name ?? ""}</div>
-              {turn === "p2" && <Loader variant="dots" />}
-            </>
-          )}
-          {(winner === "p1" || winner === "p2") && (
-            <>
-              <IconTrophy size={48} />
-              <div className="txt-lg">{session[winner]?.name ?? ""} wins!</div>
-            </>
-          )}
-          {winner === "none" && <div className="txt-lg">draw 🤝</div>}
-          {!!winner && (
-            <Button variant="light" onClick={emitPlayAgain}>
-              Play again?
-            </Button>
-          )}
-        </div>
-        <div className={scss.options}>
-          <h4>Grid size</h4>
-          <Chip.Group multiple={false} value={gridSize} onChange={setGridSize}>
-            <Chip value="3" variant="filled" radius="sm">
-              3 ✖ 3
-            </Chip>
-            <Chip value="5" variant="filled" radius="sm">
-              5 ✖ 5
-            </Chip>
-            <Chip value="7" variant="filled" radius="sm">
-              7 ✖ 7
-            </Chip>
-          </Chip.Group>
-        </div>
-      </section>
-    </main>
+          <div className={scss.options}>
+            <h4>Grid size</h4>
+            <Chip.Group multiple={false} value={gridSize} onChange={setGridSize}>
+              <Chip value="3" variant="filled" radius="sm">
+                3 ✖ 3
+              </Chip>
+              <Chip value="5" variant="filled" radius="sm">
+                5 ✖ 5
+              </Chip>
+              <Chip value="7" variant="filled" radius="sm">
+                7 ✖ 7
+              </Chip>
+            </Chip.Group>
+          </div>
+        </section>
+      </main>
+    </>
   );
 };
 
