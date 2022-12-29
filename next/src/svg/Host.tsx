@@ -1,4 +1,4 @@
-export default () => (
+const HostSvg = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -430,3 +430,5 @@ export default () => (
     <path fill="#1976d2" d="m648.17 103.26 24.55-17.2-28.46 8.47 3.91 8.73z" />
   </svg>
 );
+
+export default HostSvg;
