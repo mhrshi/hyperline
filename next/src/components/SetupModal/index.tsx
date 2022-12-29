@@ -16,7 +16,7 @@ interface Props {
   onClose: () => void;
 }
 
-export default ({ action, opened, onClose }: Props) => {
+const SetupModal = ({ action, opened, onClose }: Props) => {
   const socket = useContext(SocketContext);
   const [session, setSession] = useContext(SessionContext);
   const [gamerName, setGamerName] = useState("");
@@ -41,7 +41,7 @@ export default ({ action, opened, onClose }: Props) => {
     return () => {
       socket.off("sessionAssigned", onSessionAssigned);
     };
-  }, [gamerName]);
+  }, [gamerName, wannaHost, socket, setSession]);
 
   const title = wannaHost ? "Host a new game" : "Join game";
   const firstPlayerOnly = !session?.p2;
@@ -63,3 +63,5 @@ export default ({ action, opened, onClose }: Props) => {
     </Modal>
   );
 };
+
+export default SetupModal;

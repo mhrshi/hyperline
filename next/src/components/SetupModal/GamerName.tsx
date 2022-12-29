@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { Button, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 
@@ -15,7 +15,7 @@ const GamerName = ({ submitName }: Props) => {
   const [errors, setErrors] = useState({ name: "" });
   const [isLoading, setLoading] = useState(false);
 
-  const validateName = () => {
+  const validateName = useCallback(() => {
     const gamerName = name.trim();
     if (gamerName.length === 0) {
       setErrors((prev) => ({ ...prev, name: "Cannot be empty" }));
@@ -37,12 +37,12 @@ const GamerName = ({ submitName }: Props) => {
       return;
     }
     setErrors((prev) => ({ ...prev, name: "" }));
-  };
+  }, [name]);
 
   useEffect(() => {
     if (isMount) return;
     validateName();
-  }, [name]);
+  }, [name, isMount, validateName]);
 
   const onSubmit = (evt: FormEvent) => {
     evt.preventDefault();

@@ -1,29 +1,19 @@
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import Head from "next/head";
-import { useRouter } from "next/router";
 
 import scss from "@styles/pages/setup.module.scss";
 import SetupModal, { SetupAction } from "@components/SetupModal";
-import { SessionContext } from "@context/Session";
 import HostSvg from "@svg/Host";
 import JoinSvg from "@svg/Join";
 
 type ModalConfig = { opened: boolean; action: SetupAction };
 
 const SetupPage = () => {
-  const router = useRouter();
-  const [session] = useContext(SessionContext);
   const [modalConfig, setModalConfig] = useState<ModalConfig>({ opened: false, action: "HOST" });
 
   const openModalToHost = () => setModalConfig({ opened: true, action: "HOST" });
   const openModalToJoin = () => setModalConfig({ opened: true, action: "JOIN" });
   const closeModal = () => setModalConfig(({ action }) => ({ opened: false, action }));
-
-  useEffect(() => {
-    if (session) {
-      router.push("/play");
-    }
-  }, []);
 
   return (
     <>

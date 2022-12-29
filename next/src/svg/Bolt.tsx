@@ -1,4 +1,4 @@
-export default () => (
+const BoltSvg = () => (
   <svg xmlns="http://www.w3.org/2000/svg" height="3.6rem" viewBox="0 0 448 512">
     <defs>
       <linearGradient id="g" x2={1} y2={1}>
@@ -14,3 +14,5 @@ export default () => (
     />
   </svg>
 );
+
+export default BoltSvg;

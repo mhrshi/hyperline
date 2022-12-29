@@ -24,6 +24,7 @@ const Hosted = ({ session }: Props) => {
   const clipboard = useClipboard();
   const socket = useContext(SocketContext);
   const [, setSession] = useContext(SessionContext);
+
   useEffect(() => {
     const onPlayerAdded = (payload: Payload) => {
       if (!payload.success) return;
@@ -42,7 +43,7 @@ const Hosted = ({ session }: Props) => {
     return () => {
       socket.off("playerAdded", onPlayerAdded);
     };
-  }, []);
+  }, [router, socket, session.id, setSession]);
 
   return (
     <>

@@ -2,7 +2,7 @@ import { SVGProps } from "react";
 import scss from "./Loader.module.scss";
 import { clsx } from "utils";
 
-export default (props: SVGProps<SVGElement>) => (
+const TicTacLoader = (props: SVGProps<SVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     className={clsx("icon icon-tabler icon-tabler-tic-tac", props.className)}
@@ -26,3 +26,5 @@ export default (props: SVGProps<SVGElement>) => (
     <circle cx={18} cy={18} r={2} className={scss.o}></circle>
   </svg>
 );
+
+export default TicTacLoader;

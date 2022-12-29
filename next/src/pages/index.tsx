@@ -8,8 +8,8 @@ const IndexPage = () => {
   useEffect(() => {
     setTimeout(() => {
       router.push("/setup");
-    }, 1000);
-  }, []);
+    }, 1500);
+  }, [router]);
 
   return <Splash />;
 };

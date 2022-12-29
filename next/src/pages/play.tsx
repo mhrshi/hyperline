@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import Head from "next/head";
 import { Button, Chip } from "@mantine/core";
 import { IconCircle, IconTrophy, IconX } from "@tabler/icons";
@@ -32,16 +32,13 @@ const PlayPage = () => {
     if (!session) {
       setTimeout(() => {
         router.push("/setup");
-      }, 1000);
+      }, 1500);
     }
-  }, []);
-  if (!session) {
-    return <Splash />;
-  }
+  }, [session, router]);
 
   const [gridSize, setGridSize] = useState("3");
   const [board, setBoard] = useState<Array<number>>(Array(9).fill(0));
-  const [turn, setTurn] = useState(session.firstMover);
+  const [turn, setTurn] = useState(session?.firstMover ?? "p1");
   const [winner, setWinner] = useState<Winner>();
 
   const resetGrid = (size: number) => {
@@ -50,12 +47,12 @@ const PlayPage = () => {
     setWinner(undefined);
   };
 
-  const playAgain = () => {
+  const playAgain = useCallback(() => {
     resetGrid(Number(gridSize));
-    const other = otherPlayer(session.firstMover);
+    const other = otherPlayer(session!.firstMover);
     setTurn(other);
-    setSession({ ...session, firstMover: other });
-  };
+    setSession({ ...session!, firstMover: other });
+  }, [gridSize, session, setSession]);
 
   const emitPlayAgain = () => {
     socket.emit("playAgain", gridSize);
@@ -81,7 +78,7 @@ const PlayPage = () => {
 
     const onUpdateGrid = (size: number) => {
       resetGrid(size);
-      setTurn(session.firstMover);
+      setTurn(session!.firstMover);
     };
     socket.on("updateGrid", onUpdateGrid);
 
@@ -98,15 +95,15 @@ const PlayPage = () => {
       socket.off("resetGame", playAgain);
       socket.off("destroySession", onDestroySession);
     };
-  }, []);
+  }, [playAgain, session, socket]);
 
   useEffect(() => {
     if (isMount) return;
     socket.emit("gridChange", Number(gridSize));
-  }, [gridSize]);
+  }, [gridSize, socket, isMount]);
 
   const markSquare = (boardIndex: number) => {
-    if (turn !== session.iAm || board[boardIndex] || winner) {
+    if (turn !== session!.iAm || board[boardIndex] || winner) {
       return;
     }
     const mark = markerOf(turn);
@@ -125,6 +122,10 @@ const PlayPage = () => {
       return <IconCircle />;
     }
   };
+
+  if (!session) {
+    return <Splash />;
+  }
 
   return (
     <>

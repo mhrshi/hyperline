@@ -1,4 +1,4 @@
-import { FormEvent, useContext, useEffect, useState } from "react";
+import { FormEvent, useCallback, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Button, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
@@ -21,7 +21,7 @@ const Join = ({ gamerName }: Props) => {
   const [errors, setErrors] = useState({ sessionId: "" });
   const [isLoading, setLoading] = useState(false);
 
-  const validate = () => {
+  const validate = useCallback(() => {
     const value = sessionId.trim();
     if (value.length === 0) {
       setErrors((prev) => ({ ...prev, sessionId: "Cannot be empty" }));
@@ -35,12 +35,12 @@ const Join = ({ gamerName }: Props) => {
       return;
     }
     setErrors((prev) => ({ ...prev, sessionId: "" }));
-  };
+  }, [sessionId]);
 
   useEffect(() => {
     if (isMount) return;
     validate();
-  }, [sessionId]);
+  }, [sessionId, validate, isMount]);
 
   const onSubmit = (evt: FormEvent) => {
     evt.preventDefault();
