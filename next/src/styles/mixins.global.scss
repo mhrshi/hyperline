@@ -1,0 +1,23 @@
+@mixin phone {
+  @media (max-width: 920px) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: 921px) {
+    @content;
+  }
+}
+
+@mixin phoneGame {
+  @media (max-width: 1100px) {
+    @content;
+  }
+}
+
+@mixin desktopGame {
+  @media (min-width: 1101px) {
+    @content;
+  }
+}

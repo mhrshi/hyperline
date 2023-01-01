@@ -1,7 +1,7 @@
 <template>
     <v-app>
         <v-container class="pa-0" fill-height fluid>
-            <v-layout class="wrapper">
+          <v-layout class="wrapper">
                 <v-flex class="setup grey lighten-5">
                     <v-layout class="content-setup" column>
                         <div class="mt-3 content-setup-title">
@@ -69,7 +69,7 @@
                                     style="max-width: 60%;"
                                     :headers="headers"
                                     :items="items"
-                                    hide-actions
+                                    hide-default-footer
                                     class="elevation-3 mx-auto">
                                     <template slot="items" slot-scope="props">
                                         <td v-html="props.item.grid" class="text-xs-center"></td>
@@ -101,7 +101,7 @@
                             <v-divider></v-divider>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn 
+                                <v-btn
                                     @click="nextWindow"
                                     class="my-1 mr-1"
                                     color="primary"

@@ -1,0 +1,14 @@
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem;
+
+  svg {
+    max-width: 400px;
+    width: 100%;
+    height: auto;
+  }
+}
