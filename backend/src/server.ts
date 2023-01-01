@@ -23,7 +23,7 @@ fastify.setErrorHandler(async (err, _req, _res) => {
 fastify.register(cors, { origin: corsOrigin });
 fastify.register(compress);
 fastify.register(helmet);
-fastify.register(fastifyStatic, { root: path.join(__dirname, "..", "..", "next", "out") });
+fastify.register(fastifyStatic, { root: path.join(__dirname, "..", "..", "frontend", "out") });
 fastify.register(socketPlugin);
 
 fastify.ready().then(() => {
