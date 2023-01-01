@@ -36,6 +36,9 @@
       ],
       "@context/*": [
         "context/*"
+      ],
+      "@backend-shared-types/*": [
+        "../../backend/src/types/*"
       ]
     }
   },

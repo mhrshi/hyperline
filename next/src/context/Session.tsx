@@ -1,5 +1,7 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useState } from "react";
 
+import type { Players } from "@backend-shared-types/game";
+
 interface Player {
   name: string;
 }
@@ -7,8 +9,8 @@ export interface Session {
   id: string;
   p1?: Player;
   p2?: Player;
-  iAm: "p1" | "p2";
-  firstMover: "p1" | "p2";
+  iAm: Players;
+  firstMover: Players;
 }
 type MaybeSession = Session | undefined;
 type TSessionContext = [MaybeSession, Dispatch<SetStateAction<MaybeSession>>];

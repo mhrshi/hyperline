@@ -46,17 +46,18 @@ const Join = ({ gamerName }: Props) => {
     evt.preventDefault();
     if (errors.sessionId) return;
     setLoading(true);
-    socket.emit("addPlayer", gamerName, sessionId);
-    socket.on("playerAdded", (payload) => {
-      if (!payload.success) {
+    socket.emit("game:join", { gamerName, roomId: sessionId });
+
+    socket.on("game:joined", (body) => {
+      if (!body.success) {
         setLoading(false);
         setErrors((prev) => ({ ...prev, sessionId: "Session not found" }));
         return;
       }
       setSession({
         id: sessionId,
-        p1: { name: payload[1] },
-        p2: { name: payload[2] },
+        p1: { name: body.p1 },
+        p2: { name: body.p2 },
         iAm: "p2",
         firstMover: "p1",
       });

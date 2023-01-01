@@ -10,13 +10,10 @@ import { SocketContext } from "@context/Socket";
 import { Session, SessionContext } from "@context/Session";
 import { clsx } from "utils";
 
+import type { GameJoinedBody } from "@backend-shared-types/game";
+
 interface Props {
   session: Session;
-}
-interface Payload {
-  success: boolean;
-  1: string;
-  2: string;
 }
 
 const Hosted = ({ session }: Props) => {
@@ -26,22 +23,21 @@ const Hosted = ({ session }: Props) => {
   const [, setSession] = useContext(SessionContext);
 
   useEffect(() => {
-    const onPlayerAdded = (payload: Payload) => {
-      if (!payload.success) return;
+    const onOpponentGameJoined = (body: GameJoinedBody) => {
+      if (!body.success) return;
       setSession({
         id: session.id,
-        p1: { name: payload[1] },
-        p2: { name: payload[2] },
+        p1: { name: body.p1 },
+        p2: { name: body.p2 },
         iAm: "p1",
         firstMover: "p1",
       });
       router.push("/play");
     };
-
-    socket.on("playerAdded", onPlayerAdded);
+    socket.on("game:joined", onOpponentGameJoined);
 
     return () => {
-      socket.off("playerAdded", onPlayerAdded);
+      socket.off("game:joined", onOpponentGameJoined);
     };
   }, [router, socket, session.id, setSession]);
 

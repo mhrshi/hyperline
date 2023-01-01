@@ -8,6 +8,8 @@ import { SessionContext } from "@context/Session";
 import { SocketContext } from "@context/Socket";
 import Join from "./Join";
 
+import type { GameHostedBody } from "@backend-shared-types/game";
+
 export type SetupAction = "HOST" | "JOIN";
 
 interface Props {
@@ -28,18 +30,18 @@ const SetupModal = ({ action, opened, onClose }: Props) => {
   };
 
   useEffect(() => {
-    const onSessionAssigned = (roomId: string) => {
+    const onGameHosted = ({ roomId }: GameHostedBody) => {
       setSession({ id: roomId, p1: { name: gamerName }, iAm: "p1", firstMover: "p1" });
     };
 
     if (!gamerName) return;
     if (wannaHost) {
-      socket.emit("newHost", gamerName);
-      socket.on("sessionAssigned", onSessionAssigned);
+      socket.emit("game:host", { gamerName });
+      socket.on("game:hosted", onGameHosted);
     }
 
     return () => {
-      socket.off("sessionAssigned", onSessionAssigned);
+      socket.off("game:hosted", onGameHosted);
     };
   }, [gamerName, wannaHost, socket, setSession]);
 

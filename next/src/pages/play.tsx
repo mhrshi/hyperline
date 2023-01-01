@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import Head from "next/head";
 import { Button, Chip } from "@mantine/core";
 import { IconCircle, IconTrophy, IconX } from "@tabler/icons";
@@ -8,23 +8,17 @@ import scss from "@styles/pages/play.module.scss";
 import Splash from "@components/Splash";
 import TicTacLoader from "@components/TicTacLoader";
 import BoltSvg from "@svg/Bolt";
-import useIsMount from "@hooks/useIsMount";
 import { SocketContext } from "@context/Socket";
 import { SessionContext } from "@context/Session";
 import { clsx } from "utils";
 
-type Winner = "p1" | "p2" | "none" | undefined;
-interface Payload {
-  newMarker: 1 | 2;
-  gridArray: number[];
-  wonBy: Winner;
-}
-const markerOf = (player: "p1" | "p2") => Number(player.at(-1));
-const otherPlayer = (curr: "p1" | "p2") => (curr === "p1" ? "p2" : "p1");
+import type { GameResetBody, PlayerMarkedBody, Players, Winner } from "@backend-shared-types/game";
+
+const markerOf = (player: Players) => Number(player.at(-1));
+const otherPlayer = (curr: Players) => (curr === "p1" ? "p2" : "p1");
 
 const PlayPage = () => {
   const router = useRouter();
-  const isMount = useIsMount();
   const socket = useContext(SocketContext);
   const [session, setSession] = useContext(SessionContext);
 
@@ -36,26 +30,35 @@ const PlayPage = () => {
     }
   }, [session, router]);
 
-  const [gridSize, setGridSize] = useState("3");
+  const [gridSize, setGridSize] = useState(3);
   const [board, setBoard] = useState<Array<number>>(Array(9).fill(0));
   const [turn, setTurn] = useState(session?.firstMover ?? "p1");
   const [winner, setWinner] = useState<Winner>();
 
   const resetGrid = (size: number) => {
-    setGridSize(size.toString());
+    setGridSize(size);
     setBoard(Array(size * size).fill(0));
-    setWinner(undefined);
   };
 
-  const playAgain = useCallback(() => {
-    resetGrid(Number(gridSize));
-    const other = otherPlayer(session!.firstMover);
-    setTurn(other);
-    setSession({ ...session!, firstMover: other });
-  }, [gridSize, session, setSession]);
+  const resetGame = useCallback(
+    (size: number) => {
+      resetGrid(size);
+      const other = otherPlayer(session!.firstMover);
+      setTurn(other);
+      setSession({ ...session!, firstMover: other });
+      setWinner(undefined);
+    },
+    [session, setSession]
+  );
 
-  const emitPlayAgain = () => {
-    socket.emit("playAgain", gridSize);
+  const emitGameReset = (evt?: MouseEvent, newSize?: number) => {
+    socket.emit("game:reset", { gridSize: newSize ?? gridSize });
+  };
+
+  const onChangeGrid = (newSizeString: string) => {
+    const newSize = Number(newSizeString);
+    if (newSize === gridSize) return;
+    emitGameReset(undefined, newSize);
   };
 
   const checkForDraw = (board: number[]) => {
@@ -65,42 +68,33 @@ const PlayPage = () => {
   };
 
   useEffect(() => {
-    const onNextTurn = (payload: Payload) => {
-      setTurn(`p${payload.newMarker}`);
-      setBoard(payload.gridArray);
-      if (payload.wonBy) {
-        setWinner(payload.wonBy);
+    const onOpponentMarked = ({ nextTurn, updatedBoard, winner }: PlayerMarkedBody) => {
+      setTurn(nextTurn);
+      setBoard(updatedBoard);
+      if (winner === "p1" || winner === "p2") {
+        setWinner(winner);
       } else {
-        checkForDraw(payload.gridArray);
+        checkForDraw(updatedBoard);
       }
     };
-    socket.on("nextTurn", onNextTurn);
+    socket.on("player:marked", onOpponentMarked);
 
-    const onUpdateGrid = (size: number) => {
-      resetGrid(size);
-      setTurn(session!.firstMover);
+    const onGameReset = ({ gridSize }: GameResetBody) => {
+      resetGame(gridSize);
     };
-    socket.on("updateGrid", onUpdateGrid);
+    socket.on("game:reset", onGameReset);
 
-    socket.on("resetGame", playAgain);
-
-    const onDestroySession = () => {
+    const abortGame = () => {
       window.location.reload();
     };
-    socket.on("destroySession", onDestroySession);
+    socket.on("game:left", abortGame);
 
     return () => {
-      socket.off("nextTurn", onNextTurn);
-      socket.off("updateGrid", onUpdateGrid);
-      socket.off("resetGame", playAgain);
-      socket.off("destroySession", onDestroySession);
+      socket.off("player:marked", onOpponentMarked);
+      socket.off("game:reset", onGameReset);
+      socket.off("game:left", abortGame);
     };
-  }, [playAgain, session, socket]);
-
-  useEffect(() => {
-    if (isMount) return;
-    socket.emit("gridChange", Number(gridSize));
-  }, [gridSize, socket, isMount]);
+  }, [resetGame, session, socket]);
 
   const markSquare = (boardIndex: number) => {
     if (turn !== session!.iAm || board[boardIndex] || winner) {
@@ -110,7 +104,7 @@ const PlayPage = () => {
     setTurn((curr) => otherPlayer(curr));
     const updatedBoard = board.map((v, i) => (i === boardIndex ? mark : v));
     setBoard(updatedBoard);
-    socket.emit("turnPlayed", { index: boardIndex, gridArray: updatedBoard });
+    socket.emit("player:mark", { markedIndex: boardIndex, updatedBoard });
   };
 
   const renderSquare = (boardIndex: number) => {
@@ -160,14 +154,14 @@ const PlayPage = () => {
             )}
             {winner === "none" && <div className="txt-lg">draw 🤝</div>}
             {!!winner && (
-              <Button variant="light" onClick={emitPlayAgain}>
+              <Button variant="light" onClick={emitGameReset}>
                 Play again?
               </Button>
             )}
           </div>
           <div className={scss.options}>
             <h4>Grid size</h4>
-            <Chip.Group multiple={false} value={gridSize} onChange={setGridSize}>
+            <Chip.Group multiple={false} value={gridSize.toString()} onChange={onChangeGrid}>
               <Chip value="3" variant="filled" radius="sm">
                 3 ✖ 3
               </Chip>
