@@ -46,13 +46,13 @@ const gameHandler = (io: TypedServer, socket: TypedSocket) => {
     io.to(roomId).emit("game:left");
   });
 
-  socket.on("player:mark", ({ updatedBoard, markedIndex }) => {
+  socket.on("player:mark", ({ updatedBoard, locus }) => {
     const roomId = roomIdFrom(socket);
-    const playerMark = updatedBoard[markedIndex];
-    const hasWon = checkWin(updatedBoard, markedIndex);
+    const playerMark = updatedBoard[locus[0]][locus[1]];
+    const hasWon = checkWin(updatedBoard, locus);
     const winner = hasWon
       ? (`p${playerMark}` as Players)
-      : checkTie(updatedBoard, markedIndex)
+      : checkTie(updatedBoard)
       ? "none"
       : undefined;
     const nextTurn = ("p" + (3 - playerMark)) as Players;

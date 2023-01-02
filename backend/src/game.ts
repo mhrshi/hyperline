@@ -1,4 +1,4 @@
-type Locus = [number, number];
+import type { Board, Locus } from "./types/game.js";
 
 const AXES: Locus[][] = [
   [
@@ -22,14 +22,7 @@ const AXES: Locus[][] = [
 const makeUnvisited = (size: number) =>
   [...Array(size)].map(() => Array<boolean>(size).fill(false));
 
-const make2DBoardFrom = (oneDBoard: number[]) => {
-  const size = Math.floor(Math.sqrt(oneDBoard.length));
-  return Array(size)
-    .fill(0)
-    .map((_, i) => oneDBoard.slice(i * size, size + i * size));
-};
-
-const findDiametricMarks = (board: number[][], [rootX, rootY]: Locus, maxDepth: 3 | 4) => {
+const findDiametricMarks = (board: Board, [rootX, rootY]: Locus, maxDepth: 3 | 4) => {
   const size = board.length;
   const mark = board[rootX][rootY];
   const visited = makeUnvisited(size);
@@ -53,13 +46,10 @@ const findDiametricMarks = (board: number[][], [rootX, rootY]: Locus, maxDepth: 
   });
 };
 
-export const checkWin = (oneDBoard: number[], markedIndex: number) => {
-  const board = make2DBoardFrom(oneDBoard);
-  const size = board.length;
-  const rootNode = [Math.floor(markedIndex / size), markedIndex % size] as Locus;
-  const maxDepth = size === 3 ? 3 : 4;
-  const diametricMarks = findDiametricMarks(board, rootNode, maxDepth);
+export const checkWin = (board: Board, locus: Locus) => {
+  const maxDepth = board.length === 3 ? 3 : 4;
+  const diametricMarks = findDiametricMarks(board, locus, maxDepth);
   return diametricMarks.includes(maxDepth);
 };
 
-export const checkTie = (oneDBoard: number[], _markedIndex: number) => oneDBoard.indexOf(0) === -1;
+export const checkTie = (board: Board) => board.flat().indexOf(0) === -1;

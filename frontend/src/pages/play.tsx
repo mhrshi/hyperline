@@ -12,7 +12,14 @@ import { SocketContext } from "@context/Socket";
 import { SessionContext } from "@context/Session";
 import { clsx } from "utils";
 
-import type { GameResetBody, PlayerMarkedBody, Players, Winner } from "@backend-shared-types/game";
+import type {
+  Board,
+  GameResetBody,
+  Locus,
+  PlayerMarkedBody,
+  Players,
+  Winner,
+} from "@backend-shared-types/game";
 
 const markerOf = (player: Players) => Number(player.at(-1));
 const otherPlayer = (curr: Players) => (curr === "p1" ? "p2" : "p1");
@@ -31,13 +38,13 @@ const PlayPage = () => {
   }, [session, router]);
 
   const [gridSize, setGridSize] = useState(3);
-  const [board, setBoard] = useState<Array<number>>(Array(9).fill(0));
+  const [board, setBoard] = useState<Board>(Array(3).fill([0, 0, 0]));
   const [turn, setTurn] = useState(session?.firstMover ?? "p1");
   const [winner, setWinner] = useState<Winner>();
 
   const resetGrid = (size: number) => {
     setGridSize(size);
-    setBoard(Array(size * size).fill(0));
+    setBoard(Array(size).fill(Array(size).fill(0)));
   };
 
   const resetGame = useCallback(
@@ -88,21 +95,24 @@ const PlayPage = () => {
     };
   }, [resetGame, session, socket]);
 
-  const markSquare = (boardIndex: number) => {
-    if (turn !== session!.iAm || board[boardIndex] || winner) {
+  const markSquare = ([x, y]: Locus) => {
+    if (turn !== session!.iAm || board[x][y] || winner) {
       return;
     }
     const mark = markerOf(turn);
     setTurn((curr) => otherPlayer(curr));
-    const updatedBoard = board.map((v, i) => (i === boardIndex ? mark : v));
+    const updatedBoard = board.map((row, r) => {
+      if (r !== x) return row;
+      return row.map((c, j) => (j === y ? mark : c));
+    });
     setBoard(updatedBoard);
-    socket.emit("player:mark", { markedIndex: boardIndex, updatedBoard });
+    socket.emit("player:mark", { locus: [x, y], updatedBoard });
   };
 
-  const renderSquare = (boardIndex: number) => {
-    if (board[boardIndex] === 0) {
+  const renderSquare = ([x, y]: Locus) => {
+    if (board[x][y] === 0) {
       return null;
-    } else if (board[boardIndex] === 1) {
+    } else if (board[x][y] === 1) {
       return <IconX />;
     } else {
       return <IconCircle />;
@@ -120,11 +130,13 @@ const PlayPage = () => {
       </Head>
       <main className={scss.container}>
         <section className={clsx(scss.board, scss[`b${gridSize}x${gridSize}`])}>
-          {board.map((v, i) => (
-            <div key={i.toString()} onClick={() => markSquare(i)}>
-              {renderSquare(i)}
-            </div>
-          ))}
+          {board.flatMap((row, r) => {
+            return row.map((_, c) => (
+              <div key={`${r}${c}`} onClick={() => markSquare([r, c])}>
+                {renderSquare([r, c])}
+              </div>
+            ));
+          })}
         </section>
         <section className={scss.meta}>
           <header className={clsx(scss.header, "txt-xl header")}>HYPERLINE</header>
