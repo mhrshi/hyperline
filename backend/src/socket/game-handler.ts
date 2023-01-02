@@ -15,7 +15,7 @@ const roomIdFrom = (socket: TypedSocket) => [...socket.rooms].filter((r) => r !=
 
 const gameHandler = (io: TypedServer, socket: TypedSocket) => {
   socket.on("game:host", async ({ gamerName }) => {
-    const roomId = await nanoid(11);
+    const roomId = await nanoid(9);
     socket.join(roomId);
     ROOMS[roomId] = {
       p1: gamerName,
