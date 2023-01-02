@@ -1,6 +1,8 @@
 import { nanoid } from "nanoid/async";
+import { checkTie, checkWin } from "../game.js";
 
 import type { TypedServer, TypedSocket } from "../types/socket-io.js";
+import type { Players } from "../types/game.js";
 
 const ROOMS: {
   [roomId: string]: {
@@ -46,84 +48,16 @@ const gameHandler = (io: TypedServer, socket: TypedSocket) => {
 
   socket.on("player:mark", ({ updatedBoard, markedIndex }) => {
     const roomId = roomIdFrom(socket);
-    const nextTurn = ("p" + (3 - updatedBoard[markedIndex])) as "p1" | "p2";
-    const winner = checkForWinner(markedIndex, updatedBoard);
+    const playerMark = updatedBoard[markedIndex];
+    const hasWon = checkWin(updatedBoard, markedIndex);
+    const winner = hasWon
+      ? (`p${playerMark}` as Players)
+      : checkTie(updatedBoard, markedIndex)
+      ? "none"
+      : undefined;
+    const nextTurn = ("p" + (3 - playerMark)) as Players;
     io.to(roomId).emit("player:marked", { winner, updatedBoard, nextTurn });
   });
-};
-
-function checkForWinner(index: number, gridArray: number[]) {
-  const gridSize = Math.round(Math.sqrt(gridArray.length)) as 3 | 5 | 7;
-
-  if (index % (gridSize + 1) === 0) {
-    const major = diagonalCheck(gridArray, gridSize, 1);
-    if (major) return `p${major}` as "p1" | "p2";
-  }
-
-  if (index % (gridSize - 1) === 0) {
-    const minor = diagonalCheck(gridArray, gridSize, -1);
-    if (minor) return `p${minor}` as "p1" | "p2";
-  }
-
-  const rowRes = rowCheck(index, gridArray, gridSize);
-  if (rowRes) return `p${rowRes}` as "p1" | "p2";
-
-  const colRes = columnCheck(index, gridArray, gridSize);
-  if (colRes) return `p${colRes}` as "p1" | "p2";
-
-  return undefined;
-}
-
-function diagonalCheck(gridArray: number[], gridSize: 3 | 5 | 7, type: 1 | -1) {
-  const jump = gridSize + type;
-  let i = type === 1 ? 0 : gridSize - 1;
-  let sum = 0;
-  while (i < gridArray.length) {
-    sum += gridArray[i] * grid["magic"][gridSize][i];
-    i += jump;
-  }
-  const sumIndex = grid["wins"][gridSize].indexOf(sum);
-  return sumIndex === -1 ? "" : sumIndex + 1;
-}
-
-function rowCheck(index: number, gridArray: number[], gridSize: 3 | 5 | 7) {
-  let i = index - (index % gridSize);
-  const end = i + gridSize;
-  let sum = 0;
-  while (i < end) {
-    sum += gridArray[i] * grid["magic"][gridSize][i];
-    i++;
-  }
-  const sumIndex = grid["wins"][gridSize].indexOf(sum);
-  return sumIndex === -1 ? "" : sumIndex + 1;
-}
-
-function columnCheck(index: number, gridArray: number[], gridSize: 3 | 5 | 7) {
-  const jump = gridSize;
-  let i = index % gridSize;
-  let sum = 0;
-  while (i < gridArray.length) {
-    sum += gridArray[i] * grid["magic"][gridSize][i];
-    i += jump;
-  }
-  const sumIndex = grid["wins"][gridSize].indexOf(sum);
-  return sumIndex === -1 ? "" : sumIndex + 1;
-}
-
-const grid = {
-  magic: {
-    3: [8, 1, 6, 3, 5, 7, 4, 9, 2],
-    5: [17, 24, 1, 8, 15, 23, 5, 7, 14, 16, 4, 6, 13, 20, 22, 10, 12, 19, 21, 3, 11, 18, 25, 2, 9],
-    7: [
-      30, 39, 48, 1, 10, 19, 28, 38, 47, 7, 9, 18, 27, 29, 46, 6, 8, 17, 26, 35, 37, 5, 14, 16, 25,
-      34, 36, 45, 13, 15, 24, 33, 42, 44, 4, 21, 23, 32, 41, 43, 3, 12, 22, 31, 40, 49, 2, 11, 20,
-    ],
-  },
-  wins: {
-    3: [15, 30],
-    5: [65, 130],
-    7: [175, 350],
-  },
 };
 
 export default gameHandler;

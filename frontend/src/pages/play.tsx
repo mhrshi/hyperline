@@ -61,20 +61,12 @@ const PlayPage = () => {
     emitGameReset(undefined, newSize);
   };
 
-  const checkForDraw = (board: number[]) => {
-    if (board.indexOf(0) === -1) {
-      setWinner("none");
-    }
-  };
-
   useEffect(() => {
     const onOpponentMarked = ({ nextTurn, updatedBoard, winner }: PlayerMarkedBody) => {
       setTurn(nextTurn);
       setBoard(updatedBoard);
-      if (winner === "p1" || winner === "p2") {
+      if (winner) {
         setWinner(winner);
-      } else {
-        checkForDraw(updatedBoard);
       }
     };
     socket.on("player:marked", onOpponentMarked);
