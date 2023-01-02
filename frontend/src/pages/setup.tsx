@@ -35,11 +35,11 @@ const SetupPage = () => {
           <div>
             <h4>Levels/Grids</h4>
             <p>
-              <span>-&gt;&nbsp;&nbsp;3 ✖ 3</span>
+              <span>-&gt;&nbsp;&nbsp;3 ✖ 3 (three-in-a-line)</span>
               <br />
-              <span>-&gt;&nbsp;&nbsp;5 ✖ 5</span>
+              <span>-&gt;&nbsp;&nbsp;5 ✖ 5 (four-in-a-line)</span>
               <br />
-              <span>-&gt;&nbsp;&nbsp;7 ✖ 7</span>
+              <span>-&gt;&nbsp;&nbsp;7 ✖ 7 (four-in-a-line)</span>
             </p>
           </div>
           <div>
@@ -52,14 +52,14 @@ const SetupPage = () => {
                 to create a hyperline wins.
               </span>
             </p>
-            <p>
+            {/* <p>
               <span>-&gt;&nbsp;&nbsp;Numeric</span>
               <br />
               <span>
                 Two players, one plays with odd numbers, other with even. For a given grid, numbers
                 from 1 to X are used. First to create a hyperline summing upto Y wins.
               </span>
-            </p>
+            </p> */}
           </div>
         </section>
         <section className={scss.actions}>
