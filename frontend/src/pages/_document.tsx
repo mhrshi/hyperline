@@ -9,7 +9,18 @@ export default class _Document extends Document {
   render() {
     return (
       <Html lang="en">
-        <Head />
+        <Head>
+          <link rel="manifest" href="/hyperline.webmanifest" />
+          <link rel="icon" href="/favicon.ico" sizes="any" />
+          <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+          <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+          <meta
+            name="description"
+            property="description"
+            key="description"
+            content="A remote, PvP, 2-in-1 tic-tac-toe and magic squares game with varying grid sizes."
+          />
+        </Head>
         <body>
           <Main />
           <NextScript />
