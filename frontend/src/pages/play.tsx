@@ -41,6 +41,7 @@ const PlayPage = () => {
   const [board, setBoard] = useState<Board>(Array(3).fill([0, 0, 0]));
   const [turn, setTurn] = useState(session?.firstMover ?? "p1");
   const [winner, setWinner] = useState<Winner>();
+  const [wonLocus, setWonLocus] = useState(new Set<string>());
 
   const resetGrid = (size: number) => {
     setGridSize(size);
@@ -54,6 +55,7 @@ const PlayPage = () => {
       setTurn(other);
       setSession({ ...session!, firstMover: other });
       setWinner(undefined);
+      setWonLocus(new Set());
     },
     [session, setSession]
   );
@@ -69,11 +71,14 @@ const PlayPage = () => {
   };
 
   useEffect(() => {
-    const onOpponentMarked = ({ nextTurn, updatedBoard, winner }: PlayerMarkedBody) => {
+    const onOpponentMarked = ({ nextTurn, updatedBoard, winner, wonLocus }: PlayerMarkedBody) => {
       setTurn(nextTurn);
       setBoard(updatedBoard);
       if (winner) {
         setWinner(winner);
+        if (wonLocus) {
+          setWonLocus(new Set(wonLocus.map((l) => `${l[0]}${l[1]}`)));
+        }
       }
     };
     socket.on("player:marked", onOpponentMarked);
@@ -110,13 +115,13 @@ const PlayPage = () => {
   };
 
   const renderSquare = ([x, y]: Locus) => {
-    if (board[x][y] === 0) {
-      return null;
-    } else if (board[x][y] === 1) {
-      return <IconX />;
-    } else {
-      return <IconCircle />;
-    }
+    const shouldDim = winner === "none" || (winner && !wonLocus.has(`${x}${y}`));
+    const className = clsx(scss.sq, shouldDim && scss.dim);
+    return (
+      <div key={`${x}${y}`} onClick={() => markSquare([x, y])} className={className}>
+        {board[x][y] === 0 ? null : board[x][y] === 1 ? <IconX /> : <IconCircle />}
+      </div>
+    );
   };
 
   if (!session) {
@@ -131,11 +136,7 @@ const PlayPage = () => {
       <main className={scss.container}>
         <section className={clsx(scss.board, scss[`b${gridSize}x${gridSize}`])}>
           {board.flatMap((row, r) => {
-            return row.map((_, c) => (
-              <div key={`${r}${c}`} onClick={() => markSquare([r, c])}>
-                {renderSquare([r, c])}
-              </div>
-            ));
+            return row.map((_, c) => renderSquare([r, c]));
           })}
         </section>
         <section className={scss.meta}>
