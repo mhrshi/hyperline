@@ -138,6 +138,16 @@ const PlayPage = () => {
           {board.flatMap((row, r) => {
             return row.map((_, c) => renderSquare([r, c]));
           })}
+          <div className={clsx(scss.shadow, scss.rows)}>
+            {[...Array(gridSize)].map((_, i) => (
+              <div key={`h${i}`} />
+            ))}
+          </div>
+          <div className={clsx(scss.shadow, scss.cols)}>
+            {[...Array(gridSize)].map((_, i) => (
+              <div key={`h${i}`} />
+            ))}
+          </div>
         </section>
         <section className={scss.meta}>
           <header className={clsx(scss.header, "txt-xl header")}>HYPERLINE</header>

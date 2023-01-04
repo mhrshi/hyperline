@@ -1,7 +1,8 @@
 @import "mixins.global.scss";
 @import "variables.global.scss";
 
-$board-line: 5px solid #2e4c6d;
+$sep-thickness: 5px;
+$board-line: $sep-thickness solid #2e4c6d;
 
 .container {
   width: 100%;
@@ -26,42 +27,79 @@ $board-line: 5px solid #2e4c6d;
   justify-content: stretch;
   width: 100%;
   height: 100%;
+  position: relative;
+}
+
+.shadow {
+  z-index: -1;
+  display: grid;
+  justify-content: stretch;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: inherit;
+  height: inherit;
+
+  &.rows > div {
+    border-bottom: $board-line;
+    animation: growFromLeft 0.8s cubic-bezier(0.785, 0.135, 0.15, 0.86) forwards;
+  }
+  &.cols > div {
+    border-right: $board-line;
+    animation: growFromTop 0.8s cubic-bezier(0.785, 0.135, 0.15, 0.86) forwards;
+  }
+}
+
+@keyframes growFromLeft {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: inherit;
+  }
+}
+@keyframes growFromTop {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: inherit;
+  }
+}
+
+@mixin boardOfNxN($n) {
+  grid-template-rows: repeat($n, minmax(0, 1fr));
+  grid-template-columns: repeat($n, minmax(0, 1fr));
+
+  .shadow.rows {
+    grid-template-rows: repeat($n, minmax(0, 1fr));
+    > div:last-child {
+      border-bottom: none;
+    }
+  }
+  .shadow.cols {
+    grid-template-columns: repeat($n, minmax(0, 1fr));
+    > div:last-child {
+      border-right: none;
+    }
+  }
+
+  .sq:nth-of-type(#{$n}n) {
+    padding-right: 0;
+  }
+  .sq:nth-last-child(-n + #{$n}) {
+    padding-bottom: 0;
+  }
 }
 
 .b3x3 {
-  grid-template-rows: repeat(3, minmax(0, 1fr));
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-
-  > div:nth-of-type(3n) {
-    border-right: none;
-  }
-  > div:nth-last-child(-n + 3) {
-    border-bottom: none;
-  }
+  @include boardOfNxN(3);
 }
-
 .b5x5 {
-  grid-template-rows: repeat(5, minmax(0, 1fr));
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-
-  > div:nth-of-type(5n) {
-    border-right: none;
-  }
-  > div:nth-last-child(-n + 5) {
-    border-bottom: none;
-  }
+  @include boardOfNxN(5);
 }
-
 .b7x7 {
-  grid-template-rows: repeat(7, minmax(0, 1fr));
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-
-  > div:nth-of-type(7n) {
-    border-right: none;
-  }
-  > div:nth-last-child(-n + 7) {
-    border-bottom: none;
-  }
+  @include boardOfNxN(7);
 }
 
 .sq {
@@ -69,12 +107,12 @@ $board-line: 5px solid #2e4c6d;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-right: $board-line;
-  border-bottom: $board-line;
   cursor: pointer;
+  padding-right: $sep-thickness;
+  padding-bottom: $sep-thickness;
 
   svg {
-    transition: color 1s cubic-bezier(0.37, 0, 0.63, 1);
+    transition: color 0.8s cubic-bezier(0.37, 0, 0.63, 1);
   }
   &.dim svg {
     color: var(--mantine-color-gray-3);
