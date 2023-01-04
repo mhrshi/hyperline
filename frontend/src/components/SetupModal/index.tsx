@@ -31,7 +31,7 @@ const SetupModal = ({ action, opened, onClose }: Props) => {
 
   useEffect(() => {
     const onGameHosted = ({ roomId }: GameHostedBody) => {
-      setSession({ id: roomId, p1: { name: gamerName }, iAm: "p1", firstMover: "p1" });
+      setSession({ id: roomId, p1: gamerName, iAm: "p1", firstMover: "p1" });
     };
 
     if (!gamerName) return;
@@ -59,7 +59,7 @@ const SetupModal = ({ action, opened, onClose }: Props) => {
     >
       <div className={scss.container}>
         {!session && !gamerName && <GamerName submitName={submitName} />}
-        {wannaHost && !!session && firstPlayerOnly && <Hosted session={session} />}
+        {wannaHost && !!session && firstPlayerOnly && <Hosted />}
         {!wannaHost && !!gamerName && <Join gamerName={gamerName} />}
       </div>
     </Modal>

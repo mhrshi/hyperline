@@ -4,6 +4,14 @@ export type Locus = [x: number, y: number];
 export type Players = "p1" | "p2";
 export type Winner = Players | "none" | undefined;
 
+export type Session = {
+  id: string;
+  p1?: string;
+  p2?: string;
+  iAm: Players;
+  firstMover: Players;
+};
+
 export type GameHostBody = { gamerName: string };
 export type GameJoinBody = { gamerName: string; roomId: string };
 export type GameResetBody = { gridSize: number };

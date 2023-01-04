@@ -56,8 +56,8 @@ const Join = ({ gamerName }: Props) => {
       }
       setSession({
         id: sessionId,
-        p1: { name: body.p1 },
-        p2: { name: body.p2 },
+        p1: body.p1,
+        p2: body.p2,
         iAm: "p2",
         firstMover: "p1",
       });

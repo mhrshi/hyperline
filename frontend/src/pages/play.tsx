@@ -155,16 +155,16 @@ const PlayPage = () => {
             {!winner && (
               <>
                 {turn === "p1" && <TicTacLoader className={clsx(scss.loader, scss.x)} />}
-                <div className={clsx("txt-lg", scss.player)}>{session.p1?.name ?? ""}</div>
+                <div className={clsx("txt-lg", scss.player)}>{session.p1 ?? ""}</div>
                 <BoltSvg />
-                <div className={clsx("txt-lg", scss.player)}>{session.p2?.name ?? ""}</div>
+                <div className={clsx("txt-lg", scss.player)}>{session.p2 ?? ""}</div>
                 {turn === "p2" && <TicTacLoader className={clsx(scss.loader, scss.o)} />}
               </>
             )}
             {(winner === "p1" || winner === "p2") && (
               <>
                 <IconTrophy size={48} />
-                <div className="txt-lg">{session[winner]?.name ?? ""} wins!</div>
+                <div className="txt-lg">{session[winner] ?? ""} wins!</div>
               </>
             )}
             {winner === "none" && <div className="txt-lg">draw 🤝</div>}

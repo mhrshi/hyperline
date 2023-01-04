@@ -7,28 +7,24 @@ import { useClipboard } from "@mantine/hooks";
 import scss from "./SetupModal.module.scss";
 import TicTacLoader from "@components/TicTacLoader";
 import { SocketContext } from "@context/Socket";
-import { Session, SessionContext } from "@context/Session";
+import { SessionContext } from "@context/Session";
 import { clsx } from "utils";
 
 import type { GameJoinedBody } from "@backend-shared-types/game";
 
-interface Props {
-  session: Session;
-}
-
-const Hosted = ({ session }: Props) => {
+const Hosted = () => {
   const router = useRouter();
   const clipboard = useClipboard();
   const socket = useContext(SocketContext);
-  const [, setSession] = useContext(SessionContext);
+  const [session, setSession] = useContext(SessionContext);
 
   useEffect(() => {
     const onOpponentGameJoined = (body: GameJoinedBody) => {
       if (!body.success) return;
       setSession({
-        id: session.id,
-        p1: { name: body.p1 },
-        p2: { name: body.p2 },
+        id: session!.id,
+        p1: body.p1,
+        p2: body.p2,
         iAm: "p1",
         firstMover: "p1",
       });
@@ -39,7 +35,7 @@ const Hosted = ({ session }: Props) => {
     return () => {
       socket.off("game:joined", onOpponentGameJoined);
     };
-  }, [router, socket, session.id, setSession]);
+  }, [router, socket, session, setSession]);
 
   return (
     <>
@@ -49,7 +45,7 @@ const Hosted = ({ session }: Props) => {
         Waiting...
       </p>
       <div className={clsx("txt-lg", scss.sessionId)}>
-        {session.id}
+        {session!.id}
         <Tooltip
           withArrow
           position="top"
@@ -58,7 +54,7 @@ const Hosted = ({ session }: Props) => {
         >
           <ActionIcon
             color={clipboard.copied ? "teal.6" : "gray.6"}
-            onClick={() => clipboard.copy(session.id)}
+            onClick={() => clipboard.copy(session!.id)}
           >
             {clipboard.copied ? <IconClipboardCheck /> : <IconClipboard />}
           </ActionIcon>
