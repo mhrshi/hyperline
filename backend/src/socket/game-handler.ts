@@ -5,6 +5,8 @@ import { checkTie, checkWin } from "../game.js";
 import type { TypedServer, TypedSocket } from "../types/socket-io.js";
 import type { Board, Players } from "../types/game.js";
 
+const TWO_MINS = 1000 * 60 * 2;
+
 const roomIdFrom = (socket: TypedSocket) => [...socket.rooms].filter((r) => r !== socket.id)[0];
 const otherPlayer = (curr: Players) => (curr === "p1" ? "p2" : "p1");
 const makeEmptyBoard = (size: number): Board => Array(size).fill(Array(size).fill(0));
@@ -47,8 +49,11 @@ const gameHandler = (io: TypedServer, socket: TypedSocket) => {
 
   socket.on("disconnecting", (_reason) => {
     const roomId = roomIdFrom(socket);
-    delete ROOMS[roomId];
-    io.to(roomId).emit("game:left");
+    if (!roomId || !ROOMS[roomId]) return;
+    ROOMS[roomId].waitingForPlayerReconnect = setTimeout(() => {
+      delete ROOMS[roomId];
+      io.to(roomId).emit("game:left");
+    }, TWO_MINS);
   });
 
   socket.on("player:mark", ({ updatedBoard, locus }) => {

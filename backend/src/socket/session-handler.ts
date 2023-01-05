@@ -7,6 +7,7 @@ const sessionHandler = (socket: TypedSocket, next: () => void) => {
   const session: Session = socket.handshake.auth.session;
   if (session && ROOMS[session.id]) {
     socket.join(session.id);
+    clearTimeout(ROOMS[session.id].waitingForPlayerReconnect);
     const { nextTurn, board, winner, wonLocus } = ROOMS[session.id];
     socket.emit("game:sync", { nextTurn, board, winner, wonLocus });
   }
