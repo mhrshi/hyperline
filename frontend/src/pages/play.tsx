@@ -75,6 +75,11 @@ const PlayPage = () => {
     emitGameReset(undefined, newSize);
   };
 
+  const abortGame = useCallback(() => {
+    setSession(undefined);
+    document.location.href = "/setup";
+  }, [setSession]);
+
   useEffect(() => {
     const onOpponentMarked = ({ nextTurn, updatedBoard, winner, wonLocus }: PlayerMarkedBody) => {
       setTurn(nextTurn);
@@ -106,19 +111,17 @@ const PlayPage = () => {
     };
     socket.on("game:reset", onGameReset);
 
-    const abortGame = () => {
-      setSession(undefined);
-      window.location.reload();
-    };
     socket.on("game:left", abortGame);
+    router.events.on("routeChangeStart", abortGame);
 
     return () => {
       socket.off("player:marked", onOpponentMarked);
       socket.off("game:sync", onGameSync);
       socket.off("game:reset", onGameReset);
       socket.off("game:left", abortGame);
+      router.events.off("routeChangeStart", abortGame);
     };
-  }, [resetGame, session, setSession, socket]);
+  }, [resetGame, abortGame, session, setSession, socket, router.events]);
 
   const markSquare = ([x, y]: Locus) => {
     if (turn !== session!.iAm || board[x][y] || winner) {
