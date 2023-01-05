@@ -10,11 +10,12 @@ import TicTacLoader from "@components/TicTacLoader";
 import BoltSvg from "@svg/Bolt";
 import { SocketContext } from "@context/Socket";
 import { SessionContext } from "@context/Session";
-import { clsx } from "utils";
+import { clsx, locusToSet } from "utils";
 
 import type {
   Board,
   GameResetBody,
+  GameSyncBody,
   Locus,
   PlayerMarkedBody,
   Players,
@@ -30,11 +31,15 @@ const PlayPage = () => {
   const [session, setSession] = useContext(SessionContext);
 
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
     if (!session) {
-      setTimeout(() => {
+      timer = setTimeout(() => {
         router.push("/setup");
       }, 1500);
     }
+    return () => {
+      clearTimeout(timer);
+    };
   }, [session, router]);
 
   const [gridSize, setGridSize] = useState(3);
@@ -77,11 +82,24 @@ const PlayPage = () => {
       if (winner) {
         setWinner(winner);
         if (wonLocus) {
-          setWonLocus(new Set(wonLocus.map((l) => `${l[0]}${l[1]}`)));
+          setWonLocus(locusToSet(wonLocus));
         }
       }
     };
     socket.on("player:marked", onOpponentMarked);
+
+    const onGameSync = ({ nextTurn, board, winner, wonLocus }: GameSyncBody) => {
+      setGridSize(board.length);
+      setTurn(nextTurn);
+      setBoard(board);
+      if (winner) {
+        setWinner(winner);
+        if (wonLocus) {
+          setWonLocus(locusToSet(wonLocus));
+        }
+      }
+    };
+    socket.on("game:sync", onGameSync);
 
     const onGameReset = ({ gridSize }: GameResetBody) => {
       resetGame(gridSize);
@@ -89,16 +107,18 @@ const PlayPage = () => {
     socket.on("game:reset", onGameReset);
 
     const abortGame = () => {
+      setSession(undefined);
       window.location.reload();
     };
     socket.on("game:left", abortGame);
 
     return () => {
       socket.off("player:marked", onOpponentMarked);
+      socket.off("game:sync", onGameSync);
       socket.off("game:reset", onGameReset);
       socket.off("game:left", abortGame);
     };
-  }, [resetGame, session, socket]);
+  }, [resetGame, session, setSession, socket]);
 
   const markSquare = ([x, y]: Locus) => {
     if (turn !== session!.iAm || board[x][y] || winner) {

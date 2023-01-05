@@ -9,6 +9,7 @@ import fastifyStatic from "@fastify/static";
 import socketPlugin from "./socket/index.js";
 import { corsOrigin } from "./globals.js";
 
+import sessionHandler from "./socket/session-handler.js";
 import gameHandler from "./socket/game-handler.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -27,6 +28,7 @@ fastify.register(fastifyStatic, { root: path.join(__dirname, "..", "..", "fronte
 fastify.register(socketPlugin);
 
 fastify.ready().then(() => {
+  fastify.io.use(sessionHandler);
   fastify.io.on("connection", (socket) => {
     gameHandler(fastify.io, socket);
   });

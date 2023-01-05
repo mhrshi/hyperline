@@ -11,6 +11,7 @@ export interface ClientToServerEvents {
 export interface ServerToClientEvents {
   "game:hosted": (body: Game.GameHostedBody) => void;
   "game:joined": (body: Game.GameJoinedBody) => void;
+  "game:sync": (body: Game.GameSyncBody) => void;
   "game:reset": (body: Game.GameResetBody) => void;
   "game:left": () => void;
 

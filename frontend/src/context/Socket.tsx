@@ -9,7 +9,10 @@ import type {
 
 type TypedSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
-const socket: TypedSocket = io(process.env.NEXT_PUBLIC_SOCKET_DOMAIN ?? "", { path: "/ws/" });
+const socket: TypedSocket = io(process.env.NEXT_PUBLIC_SOCKET_DOMAIN ?? "", {
+  path: "/ws/",
+  autoConnect: false,
+});
 export const SocketContext = createContext(socket);
 
 interface Props {

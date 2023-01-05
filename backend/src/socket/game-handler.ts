@@ -1,17 +1,13 @@
 import { nanoid } from "nanoid/async";
+import ROOMS from "./ROOMS.js";
 import { checkTie, checkWin } from "../game.js";
 
 import type { TypedServer, TypedSocket } from "../types/socket-io.js";
-import type { Players } from "../types/game.js";
-
-const ROOMS: {
-  [roomId: string]: {
-    p1: string;
-    p2?: string;
-  };
-} = {};
+import type { Board, Players } from "../types/game.js";
 
 const roomIdFrom = (socket: TypedSocket) => [...socket.rooms].filter((r) => r !== socket.id)[0];
+const otherPlayer = (curr: Players) => (curr === "p1" ? "p2" : "p1");
+const makeEmptyBoard = (size: number): Board => Array(size).fill(Array(size).fill(0));
 
 const gameHandler = (io: TypedServer, socket: TypedSocket) => {
   socket.on("game:host", async ({ gamerName }) => {
@@ -20,6 +16,8 @@ const gameHandler = (io: TypedServer, socket: TypedSocket) => {
     ROOMS[roomId] = {
       p1: gamerName,
       p2: undefined,
+      nextTurn: "p1",
+      board: Array(3).fill([0, 0, 0]),
     };
     socket.emit("game:hosted", { roomId });
   });
@@ -38,6 +36,13 @@ const gameHandler = (io: TypedServer, socket: TypedSocket) => {
   socket.on("game:reset", ({ gridSize }) => {
     const roomId = roomIdFrom(socket);
     io.to(roomId).emit("game:reset", { gridSize });
+    ROOMS[roomId] = {
+      ...ROOMS[roomId],
+      nextTurn: otherPlayer(ROOMS[roomId].nextTurn),
+      board: makeEmptyBoard(gridSize),
+      winner: undefined,
+      wonLocus: undefined,
+    };
   });
 
   socket.on("disconnecting", (_reason) => {
@@ -57,6 +62,7 @@ const gameHandler = (io: TypedServer, socket: TypedSocket) => {
       : undefined;
     const nextTurn = ("p" + (3 - playerMark)) as Players;
     io.to(roomId).emit("player:marked", { nextTurn, updatedBoard, winner, wonLocus });
+    ROOMS[roomId] = { ...ROOMS[roomId], board: updatedBoard, nextTurn, winner, wonLocus };
   });
 };
 

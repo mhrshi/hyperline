@@ -19,6 +19,7 @@ export type PlayerMarkBody = { updatedBoard: Board; locus: Locus };
 
 export type GameHostedBody = { roomId: string };
 export type GameJoinedBody = { success: false } | { success: true; p1: string; p2: string };
+export type GameSyncBody = { nextTurn: Players; board: Board; winner?: Winner; wonLocus?: Locus[] };
 export type PlayerMarkedBody = {
   nextTurn: Players;
   updatedBoard: Board;
