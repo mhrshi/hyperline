@@ -9,6 +9,7 @@ const nextConfig = {
   sassOptions: {
     includePaths: [join(pathToThisDir, "src", "styles")],
   },
+  trailingSlash: true,
   redirects: async () => [
     {
       source: "/",
